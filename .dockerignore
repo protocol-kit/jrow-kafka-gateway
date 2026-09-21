@@ -1,0 +1,29 @@
+# Git
+.git
+.gitignore
+
+# Build artifacts
+target/
+**/*.rs.bk
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Documentation
+README.md
+*.md
+
+# Config files (may contain secrets)
+config.toml
+*.local.toml
+
+# Data
+data/
+*.db
+
+# OS
+.DS_Store
+Thumbs.db

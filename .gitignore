@@ -1,0 +1,29 @@
+# Rust
+/target/
+Cargo.lock
+*.rs.bk
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Application data (sled persistent storage, docker-compose volume mounts)
+/data/
+*.db
+*.db-shm
+*.db-wal
+
+# Local configuration overrides
+config.toml
+!config.example.toml
+!config.e2e.toml
+
+# Logs
+*.log

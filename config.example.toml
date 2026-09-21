@@ -1,0 +1,65 @@
+# jrow-kafka-gateway example configuration
+#
+# Copy this file to config.toml and edit as needed:
+#   cp config.example.toml config.toml
+
+[jrow]
+# Address the embedded jrow-server binds to
+bind_address = "127.0.0.1:9950"
+
+# Path to the sled database used for persistent messages/subscriptions
+persistent_storage_path = "./data/kafka-gateway.db"
+
+# WebSocket URL the sink side connects to. Defaults to "ws://{bind_address}"
+# (this gateway's own embedded server) when omitted. Override this to point
+# the sink at a different/external jrow-server, e.g. when running the source
+# and sink halves of the gateway as two separate processes/instances.
+# client_url = "ws://127.0.0.1:9950"
+
+[kafka]
+# Comma-separated list of Kafka bootstrap brokers
+bootstrap_servers = "localhost:9092"
+
+# Optional passthrough librdkafka client options (both source and sink use these)
+# Supports environment variable substitution, e.g. "${KAFKA_PASSWORD}"
+[kafka.options]
+# "security.protocol" = "SASL_SSL"
+# "sasl.mechanisms" = "PLAIN"
+# "sasl.username" = "${KAFKA_USERNAME}"
+# "sasl.password" = "${KAFKA_PASSWORD}"
+
+# --- Kafka -> jrow ---------------------------------------------------------
+[source]
+enabled = true
+
+# Kafka consumer group id
+group_id = "jrow-kafka-gateway"
+
+# Kafka topics to consume from
+topics = ["orders", "payments"]
+
+# Template used to derive the jrow topic from a Kafka topic name.
+# The literal placeholder "{topic}" is replaced with the Kafka topic name.
+jrow_topic_template = "kafka.{topic}"
+
+# Kafka `auto.offset.reset` policy: "earliest" or "latest"
+auto_offset_reset = "earliest"
+
+# --- jrow -> Kafka ---------------------------------------------------------
+[sink]
+enabled = true
+
+# Unique, stable persistent subscription id for this sink
+subscription_id = "kafka-gateway-sink"
+
+# jrow topic or wildcard pattern to subscribe to (e.g. "events.>")
+jrow_topic = "events.>"
+
+# Template used to derive the Kafka topic from the delivered jrow topic.
+# The literal placeholder "{topic}" is replaced with the jrow topic name.
+kafka_topic_template = "jrow.{topic}"
+
+# --- Health/stats endpoint ---------------------------------------------------
+[health]
+enabled = true
+bind_address = "127.0.0.1:8090"

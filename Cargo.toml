@@ -1,0 +1,46 @@
+[package]
+name = "jrow-kafka-gateway"
+version = "0.1.0"
+edition = "2021"
+authors = ["artbin"]
+description = "Bidirectional gateway bridging Kafka topics and jrow persistent pub/sub"
+license = "MIT-0"
+repository = "https://github.com/protocol-kit/jrow-kafka-gateway"
+
+[[bin]]
+name = "jrow-kafka-gateway"
+path = "src/main.rs"
+
+[dependencies]
+# jrow: embedded server (Kafka -> jrow) and client (jrow -> Kafka)
+jrow-client = { git = "https://github.com/protocol-kit/jrow.git", branch = "main" }
+jrow-core = { git = "https://github.com/protocol-kit/jrow.git", branch = "main" }
+jrow-server = { git = "https://github.com/protocol-kit/jrow.git", branch = "main" }
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Kafka client (statically links librdkafka via CMake)
+rdkafka = { version = "0.39", features = ["cmake-build"] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+
+# CLI
+clap = { version = "4", features = ["derive"] }
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Health/stats HTTP endpoint
+axum = "0.7"
+
+# Utilities
+regex = "1.10"
+thiserror = "1.0"
+
+[dev-dependencies]
+tempfile = "3.8"

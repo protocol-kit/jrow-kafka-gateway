@@ -1,0 +1,39 @@
+# Configuration used by docker-compose.yml / e2e-test.sh.
+#
+# This deliberately chains the source's output topic into the sink's input
+# pattern so a single gateway instance round-trips a message:
+#
+#   Kafka "orders" --(source)--> jrow "kafka.orders" --(sink)--> Kafka "roundtrip.kafka.orders"
+#
+# This lets the e2e test exercise both bridge directions (and the embedded
+# jrow-server in between) with one broker and one gateway container.
+
+[jrow]
+# Bind to all interfaces so the port published by docker-compose is reachable
+bind_address = "0.0.0.0:9950"
+persistent_storage_path = "/data/kafka-gateway.db"
+# The sink connects to this same embedded server over loopback
+client_url = "ws://127.0.0.1:9950"
+
+[kafka]
+# "broker" is the Kafka container's hostname on the compose network
+bootstrap_servers = "broker:19092"
+
+[source]
+enabled = true
+group_id = "jrow-kafka-gateway-e2e"
+topics = ["orders"]
+jrow_topic_template = "kafka.{topic}"
+auto_offset_reset = "earliest"
+
+[sink]
+enabled = true
+subscription_id = "jrow-kafka-gateway-e2e-sink"
+# Wildcard pattern - matches the "kafka.orders" topic the source above
+# publishes to (and any other "kafka.*" topic added later).
+jrow_topic = "kafka.>"
+kafka_topic_template = "roundtrip.{topic}"
+
+[health]
+enabled = true
+bind_address = "0.0.0.0:8090"
